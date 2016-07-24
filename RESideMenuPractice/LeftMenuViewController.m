@@ -33,7 +33,7 @@
         tableView;
     });
     [self.view addSubview:self.tableView];
-    self.view.backgroundColor = [UIColor lightGrayColor];
+    //self.view.backgroundColor = [UIColor lightGrayColor];
 }
 
 #pragma mark UITableView Delegate

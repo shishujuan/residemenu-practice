@@ -15,5 +15,11 @@
 @property (strong, nonatomic) UIViewController *leftMenuViewController;
 @property (strong, nonatomic) UIViewController *rightMenuViewController;
 
+@property (nonatomic) CGFloat contentViewScaleValue;
+@property (nonatomic) CGAffineTransform backgroundImageViewTransformation;
+@property (nonatomic) CGAffineTransform menuViewControllerTransformation;
+
+
+- (void)presentLeftMenuViewController;
 
 @end

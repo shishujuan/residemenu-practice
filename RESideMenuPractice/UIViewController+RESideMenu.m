@@ -30,7 +30,7 @@
 
 - (IBAction)presentLeftMenuViewController:(id)sender
 {
-    NSLog(@"present left menu view controller");
+    [[self sideMenuViewController] presentLeftMenuViewController];
 }
 
 - (IBAction)presentRightMenuViewController:(id)sender
