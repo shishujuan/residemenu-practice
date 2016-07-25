@@ -38,7 +38,7 @@
 
 - (IBAction)presentRightMenuViewController:(id)sender
 {
-    NSLog(@"present right menu view controller");
+    [self.sideMenuViewController presentRightMenuViewController];
 }
 
 

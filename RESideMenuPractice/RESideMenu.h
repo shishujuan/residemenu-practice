@@ -21,6 +21,7 @@
 
 
 - (void)presentLeftMenuViewController;
+- (void)presentRightMenuViewController;
 
 - (void)hideMenuViewController;
 

@@ -264,7 +264,7 @@
 - (void)willAnimateRotationToInterfaceOrientation:(UIInterfaceOrientation)toInterfaceOrientation duration:(NSTimeInterval)duration
 {
     //只有当侧边栏显示的情况下才需要修改内容视图，这个时候侧边栏缩放是1，只需要设置bounds即可。
-    if (self.leftMenuVisible) {
+    if (self.leftMenuVisible || self.rightMenuVisible) {
         self.menuViewContainer.bounds = self.view.bounds;
         
         //设置新的frame。注意重新设置frame之前需要先将transform置为CGAffineTransformIdentity，否则无效。
@@ -274,10 +274,53 @@
         
         //根据新的frame重新缩放和重新设置center
         self.contentViewContainer.transform = CGAffineTransformMakeScale(self.contentViewScaleValue, self.contentViewScaleValue);
-        CGPoint center = CGPointMake((UIDeviceOrientationIsLandscape([UIDevice currentDevice].orientation) ? self.contentViewInLandscapeOffsetCenterX + CGRectGetWidth(self.view.frame) : self.contentViewInPortraitOffsetCenterX + CGRectGetWidth(self.view.frame)), self.contentViewContainer.center.y);
+        
+        CGPoint center;
+        if (self.leftMenuVisible) {
+            center = CGPointMake((UIDeviceOrientationIsLandscape([UIDevice currentDevice].orientation) ? self.contentViewInLandscapeOffsetCenterX + CGRectGetWidth(self.view.frame) : self.contentViewInPortraitOffsetCenterX + CGRectGetWidth(self.view.frame)), self.contentViewContainer.center.y);
+        } else {
+            center = CGPointMake((UIDeviceOrientationIsLandscape([UIDevice currentDevice].orientation) ? -self.contentViewInLandscapeOffsetCenterX : -self.contentViewInPortraitOffsetCenterX), self.contentViewContainer.center.y);
+        }
         self.contentViewContainer.center = center;
     }
 }
+
+
+#pragma add right menu support
+
+- (void)presentRightMenuViewController {
+    [self presentMenuViewContainerWithMenuViewController:self.rightMenuViewController];
+    [self showRightMenuViewController];
+}
+
+- (void)showRightMenuViewController
+{
+    if (!self.rightMenuViewController) {
+        return;
+    }
+    [self.rightMenuViewController beginAppearanceTransition:YES animated:YES];
+    self.leftMenuViewController.view.hidden = YES;
+    self.rightMenuViewController.view.hidden = NO;
+    [self addContentButton];
+    
+    [[UIApplication sharedApplication] beginIgnoringInteractionEvents];
+    [UIView animateWithDuration:self.animationDuration animations:^{
+        self.contentViewContainer.transform = CGAffineTransformMakeScale(self.contentViewScaleValue, self.contentViewScaleValue);
+        self.contentViewContainer.center = CGPointMake((UIInterfaceOrientationIsLandscape([[UIApplication sharedApplication] statusBarOrientation]) ? -self.contentViewInLandscapeOffsetCenterX : -self.contentViewInPortraitOffsetCenterX), self.contentViewContainer.center.y);
+        
+        self.menuViewContainer.alpha = 1;
+        self.contentViewContainer.alpha = self.contentViewFadeOutAlpha;
+        self.menuViewContainer.transform = CGAffineTransformIdentity;
+        self.backgroundImageView.transform = CGAffineTransformIdentity;
+        
+    } completion:^(BOOL finished) {
+        [self.rightMenuViewController endAppearanceTransition];
+        self.rightMenuVisible = YES;
+        self.leftMenuVisible = NO;
+        [[UIApplication sharedApplication] endIgnoringInteractionEvents];
+    }];
+}
+
 
 
 @end

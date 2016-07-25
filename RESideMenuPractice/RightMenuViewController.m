@@ -7,6 +7,7 @@
 //
 
 #import "RightMenuViewController.h"
+#import "UIViewController+RESideMenu.h"
 
 @interface RightMenuViewController ()
 
@@ -32,7 +33,7 @@
         tableView;
     });
     [self.view addSubview:self.tableView];
-    self.view.backgroundColor = [UIColor lightGrayColor];
+    //self.view.backgroundColor = [UIColor lightGrayColor];
 }
 
 #pragma mark -
@@ -40,7 +41,21 @@
 
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath
 {
-    
+    [tableView deselectRowAtIndexPath:indexPath animated:YES];
+    switch (indexPath.row) {
+        case 0:
+            [self.sideMenuViewController setContentViewController:[[UINavigationController alloc] initWithRootViewController:[self.storyboard instantiateViewControllerWithIdentifier:@"firstViewController"]]
+                                                         animated:YES];
+            [self.sideMenuViewController hideMenuViewController];
+            break;
+        case 1:
+            [self.sideMenuViewController setContentViewController:[[UINavigationController alloc] initWithRootViewController:[self.storyboard instantiateViewControllerWithIdentifier:@"secondViewController"]]
+                                                         animated:YES];
+            [self.sideMenuViewController hideMenuViewController];
+            break;
+        default:
+            break;
+    }
 }
 
 #pragma mark -
