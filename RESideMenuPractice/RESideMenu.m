@@ -209,4 +209,40 @@
     }
 }
 
+/**
+ * 设置新的内容视图控制器
+ */
+- (void)setContentViewController:(UIViewController *)contentViewController animated:(BOOL)animated {
+    if (self.contentViewController == contentViewController) {
+        return;
+    }
+    
+    if (!animated) {
+        self.contentViewController = contentViewController;
+    } else {
+        [self addChildViewController:contentViewController];
+        contentViewController.view.alpha = 0;
+        contentViewController.view.frame = self.contentViewContainer.bounds;
+        [self.contentViewContainer addSubview:contentViewController.view];
+        [UIView animateWithDuration:self.animationDuration animations:^{
+            contentViewController.view.alpha = 1;
+        } completion:^(BOOL finished) {
+            [self hideViewController:self.contentViewController];
+            self.contentViewController = contentViewController;
+            [contentViewController didMoveToParentViewController:self];
+        }];
+    }
+}
+
+/**
+ * 移除view controller，也是规定的套路。
+ */
+- (void)hideViewController:(UIViewController *)viewController
+{
+    [viewController willMoveToParentViewController:nil];
+    [viewController.view removeFromSuperview];
+    [viewController removeFromParentViewController];
+}
+
+
 @end

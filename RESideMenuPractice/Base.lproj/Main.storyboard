@@ -27,7 +27,7 @@
         <!--First View Controller-->
         <scene sceneID="FOG-bC-7YU">
             <objects>
-                <viewController title="First View Controller" id="cBK-TV-pGO" customClass="FirstViewController" sceneMemberID="viewController">
+                <viewController storyboardIdentifier="firstViewController" title="First View Controller" id="cBK-TV-pGO" customClass="FirstViewController" sceneMemberID="viewController">
                     <layoutGuides>
                         <viewControllerLayoutGuide type="top" id="N3J-wq-moU"/>
                         <viewControllerLayoutGuide type="bottom" id="pLI-ZH-iQb"/>
@@ -66,6 +66,49 @@
             </objects>
             <point key="canvasLocation" x="-69" y="-498"/>
         </scene>
+        <!--Second View Controller-->
+        <scene sceneID="4uS-sh-XPZ">
+            <objects>
+                <viewController storyboardIdentifier="secondViewController" title="Second View Controller" id="wlq-fM-Qux" customClass="SecondViewController" sceneMemberID="viewController">
+                    <layoutGuides>
+                        <viewControllerLayoutGuide type="top" id="SMV-5X-oaV"/>
+                        <viewControllerLayoutGuide type="bottom" id="k8k-d5-yc6"/>
+                    </layoutGuides>
+                    <view key="view" contentMode="scaleToFill" id="6iK-OM-SKC">
+                        <rect key="frame" x="0.0" y="0.0" width="320" height="568"/>
+                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        <subviews>
+                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Second View Controller" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="8GE-ZU-0dV">
+                                <rect key="frame" x="70" y="92" width="180" height="21"/>
+                                <fontDescription key="fontDescription" type="system" pointSize="17"/>
+                                <color key="textColor" cocoaTouchSystemColor="darkTextColor"/>
+                                <nil key="highlightedColor"/>
+                            </label>
+                        </subviews>
+                        <color key="backgroundColor" red="1" green="1" blue="0.40000000600000002" alpha="1" colorSpace="calibratedRGB"/>
+                        <constraints>
+                            <constraint firstItem="8GE-ZU-0dV" firstAttribute="top" secondItem="SMV-5X-oaV" secondAttribute="bottom" constant="28" id="3Ta-jA-eSr"/>
+                            <constraint firstItem="8GE-ZU-0dV" firstAttribute="centerX" secondItem="6iK-OM-SKC" secondAttribute="centerX" id="Rlx-6M-ZZC"/>
+                        </constraints>
+                    </view>
+                    <navigationItem key="navigationItem" title="Second" id="Rri-Hi-Jvo">
+                        <barButtonItem key="leftBarButtonItem" title="Left" id="oPR-iv-eGQ">
+                            <connections>
+                                <action selector="presentLeftMenuViewController:" destination="wlq-fM-Qux" id="KXc-gv-0F1"/>
+                            </connections>
+                        </barButtonItem>
+                        <barButtonItem key="rightBarButtonItem" title="Right" id="mDs-9s-OOr">
+                            <connections>
+                                <action selector="presentRightMenuViewController:" destination="wlq-fM-Qux" id="Kzg-66-raY"/>
+                            </connections>
+                        </barButtonItem>
+                    </navigationItem>
+                    <simulatedScreenMetrics key="simulatedDestinationMetrics" type="retina4"/>
+                </viewController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="oTd-Vc-5hh" userLabel="First Responder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="-74" y="-143"/>
+        </scene>
         <!--Left Menu View Controller-->
         <scene sceneID="oB8-3l-YGW">
             <objects>
@@ -103,25 +146,6 @@
             </objects>
             <point key="canvasLocation" x="150" y="-1111"/>
         </scene>
-        <!--Second View Controller-->
-        <scene sceneID="3Iy-5n-Ksv">
-            <objects>
-                <viewController id="jQC-dH-SGQ" customClass="SecondViewController" sceneMemberID="viewController">
-                    <layoutGuides>
-                        <viewControllerLayoutGuide type="top" id="VtP-5H-938"/>
-                        <viewControllerLayoutGuide type="bottom" id="sJ1-BB-cMm"/>
-                    </layoutGuides>
-                    <view key="view" contentMode="scaleToFill" id="E83-PV-T4f">
-                        <rect key="frame" x="0.0" y="0.0" width="320" height="568"/>
-                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
-                        <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
-                    </view>
-                    <simulatedScreenMetrics key="simulatedDestinationMetrics" type="retina4"/>
-                </viewController>
-                <placeholder placeholderIdentifier="IBFirstResponder" id="b6a-kv-weO" userLabel="First Responder" sceneMemberID="firstResponder"/>
-            </objects>
-            <point key="canvasLocation" x="-63" y="-196"/>
-        </scene>
         <!--Navigation Controller-->
         <scene sceneID="RWF-aT-81k">
             <objects>
@@ -135,7 +159,7 @@
                     <nil name="viewControllers"/>
                     <connections>
                         <segue destination="cBK-TV-pGO" kind="relationship" relationship="rootViewController" id="xgr-QA-7X0"/>
-                        <segue destination="jQC-dH-SGQ" kind="show" identifier="Second" id="TsP-wI-Q5m"/>
+                        <segue destination="wlq-fM-Qux" kind="show" identifier="Second" id="SuZ-GQ-u8b"/>
                     </connections>
                 </navigationController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="Zoh-Rv-ab6" userLabel="First Responder" sceneMemberID="firstResponder"/>

@@ -7,7 +7,10 @@
 //
 
 #import <UIKit/UIKit.h>
+#import "RESideMenu.h"
 
 @interface UIViewController (RESideMenu)
+
+@property (nonatomic, strong, readonly) RESideMenu *sideMenuViewController;
 
 @end

@@ -7,6 +7,7 @@
 //
 
 #import "LeftMenuViewController.h"
+#import "UIViewController+RESideMenu.h"
 
 @interface LeftMenuViewController()
 
@@ -24,6 +25,7 @@
         UITableView *tableView = [[UITableView alloc] initWithFrame:CGRectMake(0, (self.view.frame.size.height - 54 * 5) / 2.0f, self.view.frame.size.width, 54 * 5) style:UITableViewStylePlain];
         tableView.autoresizingMask = UIViewAutoresizingFlexibleTopMargin | UIViewAutoresizingFlexibleBottomMargin | UIViewAutoresizingFlexibleWidth;
         tableView.dataSource = self;
+        tableView.delegate = self;
         tableView.opaque = NO;
         tableView.backgroundColor = [UIColor clearColor];
         tableView.backgroundView = nil;
@@ -33,14 +35,27 @@
         tableView;
     });
     [self.view addSubview:self.tableView];
-    //self.view.backgroundColor = [UIColor lightGrayColor];
 }
 
 #pragma mark UITableView Delegate
 
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath
 {
-    
+    [tableView deselectRowAtIndexPath:indexPath animated:YES];
+    switch (indexPath.row) {
+        case 0:
+            [self.sideMenuViewController setContentViewController:[[UINavigationController alloc] initWithRootViewController:[self.storyboard instantiateViewControllerWithIdentifier:@"firstViewController"]]
+                                                         animated:YES];
+            [self.sideMenuViewController hideMenuViewController];
+            break;
+        case 1:
+            [self.sideMenuViewController setContentViewController:[[UINavigationController alloc] initWithRootViewController:[self.storyboard instantiateViewControllerWithIdentifier:@"secondViewController"]]
+                                                         animated:YES];
+            [self.sideMenuViewController hideMenuViewController];
+            break;
+        default:
+            break;
+    }
 }
 
 #pragma mark -

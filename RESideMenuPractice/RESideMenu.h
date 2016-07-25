@@ -22,4 +22,8 @@
 
 - (void)presentLeftMenuViewController;
 
+- (void)hideMenuViewController;
+
+- (void)setContentViewController:(UIViewController *)contentViewController animated:(BOOL)animated;
+
 @end

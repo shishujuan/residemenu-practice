@@ -11,6 +11,9 @@
 
 @implementation UIViewController (RESideMenu)
 
+/**
+ * 获取Root VC。
+ */
 - (RESideMenu *)sideMenuViewController
 {
     UIViewController *iter = self.parentViewController;
@@ -30,7 +33,7 @@
 
 - (IBAction)presentLeftMenuViewController:(id)sender
 {
-    [[self sideMenuViewController] presentLeftMenuViewController];
+    [self.sideMenuViewController presentLeftMenuViewController];
 }
 
 - (IBAction)presentRightMenuViewController:(id)sender
