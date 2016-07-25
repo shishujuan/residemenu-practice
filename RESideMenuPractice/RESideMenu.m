@@ -117,9 +117,15 @@
 
 /**   
  * 放大背景图和侧边栏，这样第一次显示侧边栏的时候才会有缩小的动画效果。
+ * 1，2，3，4是因为旋转屏幕之后，需要重新设置frame大小。
  */
 - (void)presentMenuViewContainerWithMenuViewController:(UIViewController *)menuViewController {
+    self.backgroundImageView.transform = CGAffineTransformIdentity; //1
+    self.backgroundImageView.frame = self.view.bounds; //2
     self.backgroundImageView.transform = self.backgroundImageViewTransformation;
+    
+    self.menuViewContainer.transform = CGAffineTransformIdentity; //3
+    self.menuViewContainer.frame = self.view.bounds; //4
     self.menuViewContainer.transform = self.menuViewControllerTransformation;
     self.menuViewContainer.alpha = 0;
 }
@@ -242,6 +248,35 @@
     [viewController willMoveToParentViewController:nil];
     [viewController.view removeFromSuperview];
     [viewController removeFromParentViewController];
+}
+
+
+#pragma mark View Controller Rotation handler
+
+- (BOOL)shouldAutorotate
+{
+    return self.contentViewController.shouldAutorotate; //contentViewController支持旋转，如果不想支持，返回NO即可。
+}
+
+/**
+ 屏幕旋转时需要重新设置内容视图的frame和侧边栏的bounds。
+ */
+- (void)willAnimateRotationToInterfaceOrientation:(UIInterfaceOrientation)toInterfaceOrientation duration:(NSTimeInterval)duration
+{
+    //只有当侧边栏显示的情况下才需要修改内容视图，这个时候侧边栏缩放是1，只需要设置bounds即可。
+    if (self.leftMenuVisible) {
+        self.menuViewContainer.bounds = self.view.bounds;
+        
+        //设置新的frame。注意重新设置frame之前需要先将transform置为CGAffineTransformIdentity，否则无效。
+        //文档中设置frame属性时有提到: If the transform property is not the identity transform, the value of this property is undefined and therefore should be ignored.
+        self.contentViewContainer.transform = CGAffineTransformIdentity;
+        self.contentViewContainer.frame = self.view.bounds;
+        
+        //根据新的frame重新缩放和重新设置center
+        self.contentViewContainer.transform = CGAffineTransformMakeScale(self.contentViewScaleValue, self.contentViewScaleValue);
+        CGPoint center = CGPointMake((UIDeviceOrientationIsLandscape([UIDevice currentDevice].orientation) ? self.contentViewInLandscapeOffsetCenterX + CGRectGetWidth(self.view.frame) : self.contentViewInPortraitOffsetCenterX + CGRectGetWidth(self.view.frame)), self.contentViewContainer.center.y);
+        self.contentViewContainer.center = center;
+    }
 }
 
 

@@ -91,7 +91,7 @@
                             <constraint firstItem="8GE-ZU-0dV" firstAttribute="centerX" secondItem="6iK-OM-SKC" secondAttribute="centerX" id="Rlx-6M-ZZC"/>
                         </constraints>
                     </view>
-                    <navigationItem key="navigationItem" title="Second" id="Rri-Hi-Jvo">
+                    <navigationItem key="navigationItem" title="Second View" id="Rri-Hi-Jvo">
                         <barButtonItem key="leftBarButtonItem" title="Left" id="oPR-iv-eGQ">
                             <connections>
                                 <action selector="presentLeftMenuViewController:" destination="wlq-fM-Qux" id="KXc-gv-0F1"/>
