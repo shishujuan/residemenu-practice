@@ -8,7 +8,7 @@
 
 #import <UIKit/UIKit.h>
 
-@interface RESideMenu : UIViewController
+@interface RESideMenu : UIViewController <UIGestureRecognizerDelegate>
 
 
 @property (strong, nonatomic) UIViewController *contentViewController;
@@ -16,6 +16,9 @@
 @property (strong, nonatomic) UIViewController *rightMenuViewController;
 
 @property (nonatomic) CGFloat contentViewScaleValue;
+@property (nonatomic) CGFloat backgroundImageViewScaleValue;
+@property (nonatomic) CGFloat menuViewScaleValue;
+
 @property (nonatomic) CGAffineTransform backgroundImageViewTransformation;
 @property (nonatomic) CGAffineTransform menuViewControllerTransformation;
 

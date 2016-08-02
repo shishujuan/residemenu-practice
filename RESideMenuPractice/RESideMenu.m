@@ -23,6 +23,9 @@
 @property (nonatomic) BOOL leftMenuVisible;
 @property (nonatomic) BOOL rightMenuVisible;
 
+@property (nonatomic) CGPoint originalPoint;
+@property (nonatomic) CGFloat panMinimumOpenThreshold;
+
 @end
 
 @implementation RESideMenu
@@ -31,11 +34,14 @@
 - (void)commonInit {
     self.animationDuration = 0.35f;
     self.contentViewScaleValue = 0.7f;
+    self.backgroundImageViewScaleValue = 1.7;
+    self.menuViewScaleValue = 1.5;
     self.contentViewInLandscapeOffsetCenterX = 30.0f;
     self.contentViewInPortraitOffsetCenterX = 30.0f;
     self.contentViewFadeOutAlpha = 0.5;
-    self.backgroundImageViewTransformation = CGAffineTransformMakeScale(1.7, 1.7);
-    self.menuViewControllerTransformation = CGAffineTransformMakeScale(1.5, 1.5);
+    self.backgroundImageViewTransformation = CGAffineTransformMakeScale(self.backgroundImageViewScaleValue, self.backgroundImageViewScaleValue);
+    self.menuViewControllerTransformation = CGAffineTransformMakeScale(self.menuViewScaleValue, self.menuViewScaleValue);
+    self.panMinimumOpenThreshold = 60.0f;
 }
 
 - (void)viewDidLoad {
@@ -90,6 +96,8 @@
         [self addChildViewController:self.menuViewContainer childViewController:self.rightMenuViewController];
     }
     [self addChildViewController:self.contentViewContainer childViewController:self.contentViewController];
+    
+    [self addPanGesture];
 }
 
 - (void)addChildViewController:(UIView *)container childViewController:(UIViewController *)childViewController {
@@ -141,6 +149,7 @@
     [self.leftMenuViewController beginAppearanceTransition:YES animated:YES];
     self.leftMenuViewController.view.hidden = NO;
     self.rightMenuViewController.view.hidden = YES;
+    [self resetContentViewScale];
     
     [UIView animateWithDuration:self.animationDuration animations:^{
         //设置内容视图的缩放比例为0.7
@@ -286,7 +295,7 @@
 }
 
 
-#pragma add right menu support
+#pragma mark Add right menu support
 
 - (void)presentRightMenuViewController {
     [self presentMenuViewContainerWithMenuViewController:self.rightMenuViewController];
@@ -302,6 +311,7 @@
     self.leftMenuViewController.view.hidden = YES;
     self.rightMenuViewController.view.hidden = NO;
     [self addContentButton];
+    [self resetContentViewScale];
     
     [[UIApplication sharedApplication] beginIgnoringInteractionEvents];
     [UIView animateWithDuration:self.animationDuration animations:^{
@@ -321,6 +331,108 @@
     }];
 }
 
+
+#pragma mark Add pan gesture
+
+- (void)addPanGesture {
+    self.view.multipleTouchEnabled = NO;
+    UIPanGestureRecognizer *panGestureRecognizer = [[UIPanGestureRecognizer alloc] initWithTarget:self action:@selector(panGestureRecognized:)];
+    panGestureRecognizer.delegate = self;
+    [self.view addGestureRecognizer:panGestureRecognizer];
+}
+
+- (void)panGestureRecognized:(UIPanGestureRecognizer *)recognizer {
+    CGPoint point = [recognizer translationInView:self.view];
+    if (recognizer.state == UIGestureRecognizerStateBegan) {
+        //originalPoint的x值为当前中心点距离原来中心点的x轴距离，y值类似。
+        self.originalPoint = CGPointMake(self.contentViewContainer.center.x - CGRectGetWidth(self.contentViewContainer.bounds) / 2.0,
+                                         self.contentViewContainer.center.y - CGRectGetHeight(self.contentViewContainer.bounds) / 2.0);
+        
+        self.backgroundImageView.transform = CGAffineTransformIdentity;
+        self.backgroundImageView.frame = self.view.bounds;
+        
+        self.menuViewContainer.transform = CGAffineTransformIdentity;
+        self.menuViewContainer.frame = self.view.bounds;
+    }
+    
+    if (recognizer.state == UIGestureRecognizerStateChanged) {
+        CGFloat delta;
+        if (self.leftMenuVisible || self.rightMenuVisible) {
+            delta = fabs(self.originalPoint.x != 0 ? (point.x + self.originalPoint.x) / self.originalPoint.x : 0);
+        } else {
+            delta = fabs(point.x / self.view.frame.size.width);
+        }
+        
+        CGFloat backgroundViewScale = self.backgroundImageViewScaleValue - ((self.backgroundImageViewScaleValue-1) * delta);
+        CGFloat menuViewScale = self.menuViewScaleValue - ((self.menuViewScaleValue-1) * delta);
+        
+        //为了向右拖动的时候背景图的缩放比例不小于1，否则背景不能充满屏幕看起来不美观。
+        if (backgroundViewScale < 1) {
+            self.backgroundImageView.transform = CGAffineTransformIdentity;
+        } else {
+            self.backgroundImageView.transform = CGAffineTransformMakeScale(backgroundViewScale, backgroundViewScale);
+        }
+
+        self.menuViewContainer.transform = CGAffineTransformMakeScale(menuViewScale, menuViewScale);
+        self.menuViewContainer.alpha = delta;
+        
+
+        self.contentViewContainer.alpha = 1 - (1 - self.contentViewFadeOutAlpha) * delta;
+        
+        //如果缩放比例大于1，则设置为相反的值。比如放大1.2倍则设置成缩小为0.8倍。
+        CGFloat contentViewScale = 1 - ((1 - self.contentViewScaleValue) * delta);
+        if (contentViewScale > 1) {
+            contentViewScale = (1 - (contentViewScale - 1));
+        }
+        
+        self.contentViewContainer.transform = CGAffineTransformMakeScale(contentViewScale, contentViewScale);
+        self.contentViewContainer.transform = CGAffineTransformTranslate(self.contentViewContainer.transform, point.x, 0);
+        
+        //注意这里左右view的可见设置，不设置则在拖动的时候会在某个时刻同时出现左右侧边栏的。
+        self.leftMenuViewController.view.hidden = self.contentViewContainer.frame.origin.x < 0;
+        self.rightMenuViewController.view.hidden = self.contentViewContainer.frame.origin.x > 0;
+    }
+    
+    if (recognizer.state == UIGestureRecognizerStateEnded) {
+        if (self.panMinimumOpenThreshold > 0 && (
+                (self.contentViewContainer.frame.origin.x < 0 && self.contentViewContainer.frame.origin.x > -((NSInteger)self.panMinimumOpenThreshold)) ||
+                (self.contentViewContainer.frame.origin.x > 0 && self.contentViewContainer.frame.origin.x < self.panMinimumOpenThreshold))) {
+            [self hideMenuViewController];
+        }
+        else if (self.contentViewContainer.frame.origin.x == 0) {
+            [self hideMenuViewController:NO];
+        }
+        else {
+            if ([recognizer velocityInView:self.view].x > 0) {
+                if (self.contentViewContainer.frame.origin.x < 0) {
+                    [self hideMenuViewController];
+                } else {
+                    if (self.leftMenuViewController) {
+                        [self showLeftMenuViewController];
+                    }
+                }
+            } else {
+                if (self.contentViewContainer.frame.origin.x < 20) {
+                    if (self.rightMenuViewController) {
+                        [self showRightMenuViewController];
+                    }
+                } else {
+                    [self hideMenuViewController];
+                }
+            }
+        }
+    }
+}
+
+- (void)resetContentViewScale
+{
+    CGAffineTransform t = self.contentViewContainer.transform;
+    CGFloat scale = sqrt(t.a * t.a + t.c * t.c);
+    CGRect frame = self.contentViewContainer.frame;
+    self.contentViewContainer.transform = CGAffineTransformIdentity;
+    self.contentViewContainer.transform = CGAffineTransformMakeScale(scale, scale);
+    self.contentViewContainer.frame = frame;
+}
 
 
 @end
